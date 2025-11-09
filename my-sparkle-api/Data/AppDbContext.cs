@@ -1,15 +1,42 @@
 using Microsoft.EntityFrameworkCore;
-using MySparkleHeart.Api.Models;
+using my_sparkle_api.Models;
 
-namespace MySparkleHeart.Api.Data
+namespace my_sparkle_api.Data
 {
+    // The AppDbContext is the "bridge" between your C# classes and your SQL Server database.
+    // EF Core uses this class to query and save data.
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
+        // This constructor receives options (like connection strings) from the system at startup.
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
-        public DbSet<UserProfile> Users { get; set; }
+        // DbSets represent database tables.
+        // EF Core will create tables named 'Users' and 'Children' based on these models.
+        //
+        // EF Core (Entity Framework Core) is an ORM — an Object Relational Mapper.
+        // It helps keep the code (C# models) and database schema in sync.
+        // Whenever I make changes to my models, I can run a "migration" to update the database structure.
+        // Once the database is set up, EF Core automatically handles all SQL operations
+        // (like inserting, updating, deleting, and reading records) behind the scenes.
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<Child> Children { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // One-to-many relationship: one User has many Children
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Children)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId);
+
+            // Configuring Allergies (collection of strings) for EF Core 7+
+            modelBuilder.Entity<Child>()
+                .OwnsMany(c => c.Allergies);
+        }
     }
 }
