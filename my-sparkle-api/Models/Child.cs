@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace my_sparkle_api.Models
 {
@@ -15,12 +16,12 @@ namespace my_sparkle_api.Models
         public required int Age { get; set; }
 
         // A list of known allergies (e.g., "Peanuts", "Latex", "Dairy")
-        public ICollection<string> Allergies { get; set; } = [];
+        public List<Allergy> Allergies { get; set; } = new();
 
         // Foreign key to the parent (User)
         public int UserId { get; set; }
 
-        // Navigation property — lets us access the parent object from the child and every child must have a User (Parent) 
-        public required User User { get; set; }
+        [JsonIgnore] // prevents infinite loop
+        public User Parent { get; set; } = null!;
     }
 }

@@ -24,6 +24,8 @@ namespace my_sparkle_api.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Child> Children { get; set; }
 
+        public DbSet<Allergy> Allergies { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,12 +33,8 @@ namespace my_sparkle_api.Data
             // One-to-many relationship: one User has many Children
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Children)
-                .WithOne(c => c.User)
+                .WithOne(c => c.Parent)
                 .HasForeignKey(c => c.UserId);
-
-            // Configuring Allergies (collection of strings) for EF Core 7+
-            modelBuilder.Entity<Child>()
-                .OwnsMany(c => c.Allergies);
         }
     }
 }
