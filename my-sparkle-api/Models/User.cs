@@ -21,6 +21,6 @@ namespace my_sparkle_api.Models
 
         // Navigation property — allows this User to have multiple children registered.
         // The ICollection means it's a "one-to-many" relationship.
-        public ICollection<Child> Children { get; set; }
+        public ICollection<Child> Children { get; set; } = new List<Child>();
     }
 }

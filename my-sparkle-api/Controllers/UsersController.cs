@@ -4,6 +4,7 @@ using my_sparkle_api.Data;
 using my_sparkle_api.DTOs;
 using my_sparkle_api.Models;
 using my_sparkle_api.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace my_sparkle_api.Controllers
 {
@@ -13,10 +14,14 @@ namespace my_sparkle_api.Controllers
     {
         private readonly AppDbContext _context;
 
-        public UsersController(AppDbContext context)
+        private readonly IConfiguration _config;
+
+        public UsersController(AppDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
+
 
         // GET: api/users
         [HttpGet]
@@ -60,7 +65,7 @@ namespace my_sparkle_api.Controllers
             return Ok(result);
         }
 
-        // Simple route test
+        // GET: api/ping
         [HttpGet("ping")]
         public IActionResult Ping()
         {
@@ -118,5 +123,49 @@ namespace my_sparkle_api.Controllers
             // 7. Return success
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, result);
         }
+
+        // POST: api/users/login
+        [HttpPost("login")]
+        public async Task<ActionResult<object>> Login(UserLoginDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Look up the user by email
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
+
+            if (user == null)
+            {
+                // Don't reveal whether email or password was wrong
+                return Unauthorized(new { message = "Invalid email or password." });
+            }
+
+            // Hash the incoming password to compare
+            var hashedInput = PasswordHasher.HashPassword(dto.Password);
+
+            if (hashedInput != user.PasswordHash)
+            {
+                return Unauthorized(new { message = "Invalid email or password." });
+            }
+
+            // Generate JWT token
+            var token = JwtTokenGenerator.GenerateToken(user.Id.ToString(), user.Email, _config);
+
+            // Return token + user info
+            return Ok(new
+            {
+                token,
+                expiresIn = 3600, // seconds (1 hour)
+                user = new
+                {
+                    id = user.Id,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    email = user.Email
+                }
+            });
+        }
+
     }
 }
