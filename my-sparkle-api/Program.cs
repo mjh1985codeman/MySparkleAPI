@@ -15,6 +15,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.MapGet("/", () => "Welcome to the MySparkleHeart API 🚀");
+
 app.MapControllers();
 
 app.Run();
