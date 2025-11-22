@@ -35,7 +35,7 @@ This API supports a real-world small business:
 
 Parents can create accounts, register their children for classes, and manage bookings.
 
-## 🔐 Authentication (Coming Next)
+## 🔐 Authentication 
 
 - User Login endpoint  
 - Password verification  
