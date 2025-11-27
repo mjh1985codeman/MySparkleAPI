@@ -16,7 +16,7 @@ namespace my_sparkle_api.Models
         public required int Age { get; set; }
 
         // A list of known allergies (e.g., "Peanuts", "Latex", "Dairy")
-        public List<Allergy> Allergies { get; set; } = new();
+        public List<Allergy> Allergies { get; set; } = new List<Allergy>();
 
         // Foreign key to the parent (User)
         public int UserId { get; set; }

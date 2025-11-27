@@ -40,18 +40,16 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-//MiddleWare
+// Middleware
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();   // MUST come first
+app.UseAuthorization();    // AFTER authentication
 
 app.MapGet("/", () => "Welcome to the MySparkleHeart API 🚀");
-
-app.UseAuthentication();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+

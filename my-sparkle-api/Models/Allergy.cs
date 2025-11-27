@@ -6,7 +6,7 @@
         public string Name { get; set; } = string.Empty; // Allergy name, e.g. "Peanuts"
 
         // Relationship back to the child
-        public int ChildId { get; set; }
+        public int ChildId { get; set; } // FK 
         public Child Child { get; set; } = null!;
     }
 }
